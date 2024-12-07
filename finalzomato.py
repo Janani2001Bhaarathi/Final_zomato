@@ -4,8 +4,7 @@ import plotly.express as px
 import streamlit as st
 from streamlit_option_menu import option_menu
 from PIL import Image 
-
-df = pd.read_csv('merged_data.csv')
+df = pd.read_csv('merged_data (2).csv')
 
 #-------------------------------------------------------streamlit part--------------------------------------------------------------------------------
 #menu bar 
@@ -19,6 +18,7 @@ selected = option_menu(
     default_index = 0,
     orientation=  "horizontal")
 
+#-------------------------------------------------------OVERVIEWS--------------------------------------------------------------------------------
 
 if selected == 'OVERVIEW':
     st.write('''# Zomato Data Analysis and Visualization
@@ -74,6 +74,7 @@ This project focuses on analyzing and visualizing data from Zomato, a popular re
 ''')
     
 
+#-------------------------------------------------------PROJECTS--------------------------------------------------------------------------------
 
 if selected == 'PROJECT':
     selected = option_menu(
@@ -126,10 +127,10 @@ if selected == 'PROJECT':
         with col1:
             restaurant_count = filtered_data['Country'].value_counts().reset_index()
             restaurant_count.columns = ['Country', 'Total Restaurants']
-            # Chart: Total Number of Restaurants by Country
-            fig1 = px.bar(restaurant_count, x='Country', y='Total Restaurants', title='Total Number of Restaurants by Country')
-            # Display the first chart
-            st.plotly_chart(fig1)
+
+            # Display the count as a table
+            st.write("### Total Number of Restaurants by Country")
+            st.table(restaurant_count)
 
             # Group by cuisine and calculate average price
             average_price_by_cuisine = filtered_data.groupby('Cuisines')['Average Cost for two'].mean().reset_index()
@@ -165,8 +166,9 @@ if selected == 'PROJECT':
         average_price_by_cuisine = city_data.groupby('Cuisines')['Average Cost for two'].mean().reset_index()
         most_expensive_cuisine = average_price_by_cuisine.sort_values(by='Average Cost for two', ascending=False).head(1)
 
-        # Rating count in the city
-        rating_counts = city_data['Rating text'].value_counts()
+        #rating
+        rating = city_data['Aggregate rating'].mode()[0]
+        rating_txt = city_data['Rating text'].mode()[0]
 
         # Pie chart data for online delivery vs. dine-in
         delivery_counts = city_data['Has Online delivery'].value_counts()
@@ -175,11 +177,10 @@ if selected == 'PROJECT':
 
         # Display results
         st.write(f"## Most Popular Cuisine in {selected_city}, {selected_country}:** {popular_cuisine}")
-        st.write(f"## Most Expensive Cuisine in {selected_city}, {selected_country}:** {most_expensive_cuisine['Cuisines'].values[0]} with an average cost of {most_expensive_cuisine['Average Cost for two'].values[0]} INR")
+        st.metric(label=f"Rating for {popular_cuisine}", value=f"{rating} ⭐")
+        st.text(rating_txt)
 
-        # Display rating counts in the city
-        st.write("**Rating Counts in the City:**")
-        st.bar_chart(rating_counts)
+        st.write(f"## Most Expensive Cuisine in {selected_city}, {selected_country}:** {most_expensive_cuisine['Cuisines'].values[0]} with an average cost of {most_expensive_cuisine['Average Cost for two'].values[0]} INR")
 
         delivery_labels = ['Dine-in', 'Online Delivery']
         delivery_data = [delivery_counts.get(True, 0), delivery_counts.get(False, 0)]
@@ -241,6 +242,9 @@ if selected == 'PROJECT':
         top_dine_in_cities = online_delivery_by_city.sort_values(by='Dine-in', ascending=False).head(5)
         st.write("Top Cities for Dine-in:")
         st.table(top_dine_in_cities[['Dine-in']])    
+
+#-------------------------------------------------------ABOUT--------------------------------------------------------------------------
+
 
 if selected == 'ABOUT':
         col1, col2 = st.columns(2)  
