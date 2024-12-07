@@ -23,9 +23,7 @@ Image Processing: PIL (Python Imaging Library)
 # About the Creator
 
 Name: Janani Bhaarathi K M
-
 Role: Aspiring Data Scientist 🌟
-
 Contact: Email | GitHub | LinkedIn
 
 
